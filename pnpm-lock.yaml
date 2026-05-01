@@ -1,0 +1,176 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      dayjs:
+        specifier: ^1.11.20
+        version: 1.11.20
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
+      node-screenshots:
+        specifier: ^0.2.8
+        version: 0.2.8
+      node-sound-volume:
+        specifier: ^1.0.2
+        version: 1.0.2
+      openai:
+        specifier: ^6.35.0
+        version: 6.35.0
+    devDependencies:
+      '@types/node':
+        specifier: ^25.6.0
+        version: 25.6.0
+
+packages:
+
+  '@types/node@25.6.0':
+    resolution: {integrity: sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ==}
+
+  dayjs@1.11.20:
+    resolution: {integrity: sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ==}
+
+  dotenv@17.4.2:
+    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
+    engines: {node: '>=12'}
+
+  node-screenshots-darwin-arm64@0.2.8:
+    resolution: {integrity: sha512-CEJE47gG2ceTc1fQRE3T/8lBwCGFJ+0iJiP+CQgCUAll4kKd32DQ7lCANqUseo96/xi6HuDOlrjLkAp7x2TzFw==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  node-screenshots-darwin-x64@0.2.8:
+    resolution: {integrity: sha512-3WIw4QaEP3pIUtSYh2NThwmzQl00H1bTPwPS7sYRLihAzB3NA/FOnIqRmvtadI0KEnnRGX4apdZgIhfXtgbNZA==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  node-screenshots-linux-arm64-gnu@0.2.8:
+    resolution: {integrity: sha512-aXJKtekSzQLJX6hh/VT5gilyloiN3DE4oE5xu9z7nLcTPyfC089dqVoERXJxnT+aqSQzx0KkI2te8BZNkjaMtQ==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  node-screenshots-linux-loong64-gnu@0.2.8:
+    resolution: {integrity: sha512-+982Yn7L7XID/FhYR6W6S2IVTLiueOBcHs/BP1Te5W6MtwlIIRg593zFh5HPQp7G+IaHqEXQzQj6D7kjJhXzsQ==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [loong64]
+    os: [linux]
+    libc: [glibc]
+
+  node-screenshots-linux-x64-gnu@0.2.8:
+    resolution: {integrity: sha512-xF0hLfPMm9NEF4WtiQnbCyCUxU15M25lFkBzK4WS1CGOcxM7e30tvvwyYfmrMp3OtW/hESQFtiTb4cjKcOdaSA==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  node-screenshots-linux-x64-musl@0.2.8:
+    resolution: {integrity: sha512-mu/sVwDMt2yQM5ql2rtyQm+mq6Im2ycQLzQxXFXVJOB+k5A+Hk9h65J+G+Iy3rn1uNrYVDjgUQGvIkgpkIonCg==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  node-screenshots-win32-arm64-msvc@0.2.8:
+    resolution: {integrity: sha512-g7nnuoJO2yjO8Ovr+Uz9e+LYJMlYc5eqoGPQq7U7NK1LVc2DpyCJ18VT8WdP2f098lfHvE12D3X7Es8NLFjiPg==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  node-screenshots-win32-ia32-msvc@0.2.8:
+    resolution: {integrity: sha512-Qsh4Ggs7MzO2XuDPFMRcRxRuiUGxxtHEFuqAfLFL1DiOfBIhLpukZ8JUHlEBdzjPxMFFRJw/4nOm0tnyHP/fiQ==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [ia32]
+    os: [win32]
+
+  node-screenshots-win32-x64-msvc@0.2.8:
+    resolution: {integrity: sha512-DdFORB74FghM1L6UtE1TltIR2H0CCCmfQEa8gp2CTSdtBr2b0TKL7ZlbEV6x/wVKRFT59w7Kd6BULdeMmp0X2w==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [x64]
+    os: [win32]
+
+  node-screenshots@0.2.8:
+    resolution: {integrity: sha512-7O2ab89hkUgiXkrYj9iYCbJjY1iFJqIyZt0vuVtHFKlnajeFoyW+hur4CPxwwrnCUK0ahr0WLWQ5A6rCzF8rWQ==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+
+  node-sound-volume@1.0.2:
+    resolution: {integrity: sha512-bggT3YAfHJAk+tQk4bh1j1ftHP2L3n6Auc9YxGdxMYByR0LI1tBOa89BOEepepcf/ZJI55e5nei8UfiS75iAMw==}
+
+  openai@6.35.0:
+    resolution: {integrity: sha512-L/skwIGnt5xQZHb0UfTu9uAUKbis3ehKypOuJKi20QvG7UStV6C8IC3myGYHcdiF4kms/bAvOJ9UqqNWqi8x/Q==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
+
+  undici-types@7.19.2:
+    resolution: {integrity: sha512-qYVnV5OEm2AW8cJMCpdV20CDyaN3g0AjDlOGf1OW4iaDEx8MwdtChUp4zu4H0VP3nDRF/8RKWH+IPp9uW0YGZg==}
+
+snapshots:
+
+  '@types/node@25.6.0':
+    dependencies:
+      undici-types: 7.19.2
+
+  dayjs@1.11.20: {}
+
+  dotenv@17.4.2: {}
+
+  node-screenshots-darwin-arm64@0.2.8:
+    optional: true
+
+  node-screenshots-darwin-x64@0.2.8:
+    optional: true
+
+  node-screenshots-linux-arm64-gnu@0.2.8:
+    optional: true
+
+  node-screenshots-linux-loong64-gnu@0.2.8:
+    optional: true
+
+  node-screenshots-linux-x64-gnu@0.2.8:
+    optional: true
+
+  node-screenshots-linux-x64-musl@0.2.8:
+    optional: true
+
+  node-screenshots-win32-arm64-msvc@0.2.8:
+    optional: true
+
+  node-screenshots-win32-ia32-msvc@0.2.8:
+    optional: true
+
+  node-screenshots-win32-x64-msvc@0.2.8:
+    optional: true
+
+  node-screenshots@0.2.8:
+    optionalDependencies:
+      node-screenshots-darwin-arm64: 0.2.8
+      node-screenshots-darwin-x64: 0.2.8
+      node-screenshots-linux-arm64-gnu: 0.2.8
+      node-screenshots-linux-loong64-gnu: 0.2.8
+      node-screenshots-linux-x64-gnu: 0.2.8
+      node-screenshots-linux-x64-musl: 0.2.8
+      node-screenshots-win32-arm64-msvc: 0.2.8
+      node-screenshots-win32-ia32-msvc: 0.2.8
+      node-screenshots-win32-x64-msvc: 0.2.8
+
+  node-sound-volume@1.0.2: {}
+
+  openai@6.35.0: {}
+
+  undici-types@7.19.2: {}
