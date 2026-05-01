@@ -43,16 +43,19 @@ async function getWXSound() {
         direction: "Render",
     });
     for (let i = 0; i < volumes.length; i++) {
-        if (volumes[i].name.includes("WeChat") && volumes[i].deviceState === "Active") {
+        if ((volumes[i].name.includes("Weixin") || volumes[i].name.includes("WeChat")) && volumes[i].deviceState === "Active") {
             return true
         }
+        // if(volumes[i].name.includes("Weixin") ){
+        //     console.log(volumes[i])
+        // }
     }
     return false
 }
 async function captureWX() {
     let windows = Window.all()
     for (let window of windows) {
-        if (window.appName() === "WeChat") {
+        if (window.appName() === "WeChat" || window.appName() === "Weixin") {
             return await window.captureImage()
         }
     }
@@ -90,6 +93,8 @@ const handleWXMsg = debounce(async () => {
 
         }
 
+    }else{
+        console.error("截图失败")
     }
 }, 1000)
 
