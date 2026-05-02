@@ -112,11 +112,16 @@ async function AIprocess(base64: string) {
                 ]
             }],
     });
-    if (!completion.choices[0].message.content) {
+    console.log(completion.usage)
+    let content1 = completion.choices[0].message.content
+    if (!content1) {
         throw new Error("AI返回为空")
     }
-    console.log(completion.usage)
-    console.log(completion.choices[0].message.content)
+    console.log('消息内容：', content1)
+    if (!content1.includes("请") || !content1.includes("假")) {
+        console.log("非请假消息")
+        return
+    }
     console.log("分析消息内容中：")
     completion = await (openai.chat.completions as any).create({
         model: "deepseek-v4-flash",
@@ -127,7 +132,7 @@ async function AIprocess(base64: string) {
             {
                 role: "user",
                 content: [
-                    { type: "text", text: completion.choices[0].message.content },
+                    { type: "text", text: content1 },
                     {
                         type: "text", text: `
 你需要查明以下内容
@@ -152,12 +157,13 @@ async function AIprocess(base64: string) {
             }],
     });
     console.log(completion.usage)
-    if (completion.choices[0].message.content === "消息无效") {
-        console.log("非请假消息")
+    let content2 = completion.choices[0].message.content
+    if (content2 === "消息无效") {
+        console.log("消息无效：")
         console.log(completion.choices[0].message.reasoning_content)
     } else {
-        console.log("请假消息", completion.choices[0].message.content)
-        let data = JSON.parse(completion.choices[0].message.content ?? '')
+        console.log("请假消息", content2)
+        let data = JSON.parse(content2 ?? '')
         let res = await fetch(`${API_URL}/add`, {
             method: 'POST',
             headers: {
