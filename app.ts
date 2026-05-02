@@ -6,22 +6,21 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import timezone from "dayjs/plugin/timezone.js";
 
-import { readFile, writeFile } from "fs/promises";
+import { writeFile } from "fs/promises";
 import { mkdirSync, existsSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 dotenv.config()
 
-const sv = new soundVolume('svcl.exe')
+const API_URL = process.env.API_URL ?? 'http://localhost:3000'
+const API_KEY = process.env.API_KEY ?? '114514'
+
+const sv = new soundVolume(join(dirname(fileURLToPath(import.meta.url)), 'svcl.exe'))
 const logDir = join(dirname(fileURLToPath(import.meta.url)), 'log')
-const dataFileName = join(dirname(fileURLToPath(import.meta.url)), 'data.json')
+
 if (!existsSync(logDir)) {
     mkdirSync(logDir)
-}
-if (!existsSync(dataFileName)) {
-    writeFile(dataFileName, '[]')
 }
 console.log("截图日志保存路径：", logDir)
 
@@ -32,7 +31,7 @@ dayjs.tz.setDefault("Asia/Shanghai")
 
 const openai = new OpenAI(
     {
-        apiKey: process.env.API_KEY || '',
+        apiKey: process.env.AI_API_KEY,
         baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
     }
 );
@@ -93,61 +92,81 @@ const handleWXMsg = debounce(async () => {
 
         }
 
-    }else{
+    } else {
         console.error("截图失败")
     }
 }, 1000)
 
 async function AIprocess(base64: string) {
-    const completion = await (openai.chat.completions as any).create({
+    console.log("提取消息内容中：")
+    let completion = await (openai.chat.completions as any).create({
         model: "qwen3.5-plus",
         stream: false,
-        enable_thinking: true,
-        thinking_budget: 250,
+        enable_thinking: false,
         messages: [
             {
                 role: "user",
                 content: [
                     { type: "image_url", image_url: { "url": `data:image/png;base64,${base64}` } },
+                    { type: "text", text: `提取图中最后一条消息的内容，仔细核对每个字后再输出。数据将提供给程序使用，不要输出额外内容，否则程序将崩溃` },
+                ]
+            }],
+    });
+    if (!completion.choices[0].message.content) {
+        throw new Error("AI返回为空")
+    }
+    console.log(completion.usage)
+    console.log(completion.choices[0].message.content)
+    console.log("分析消息内容中：")
+    completion = await (openai.chat.completions as any).create({
+        model: "deepseek-v4-flash",
+        stream: false,
+        enable_thinking: true,
+        thinking_budget: 500,
+        messages: [
+            {
+                role: "user",
+                content: [
+                    { type: "text", text: completion.choices[0].message.content },
                     {
                         type: "text", text: `
-图片是微信截图，你只能从最后一条消息获取信息，不能看之前的信息。
 你需要查明以下内容
-1.是否为请假申请
-2.请假者姓名是什么
-3.请假时间是哪天到哪天
+1.判断是否为请假申请
+2.提取请假者姓名
+3.提取起始日期和结束日期
 重要：
 今天是${dayjs().format("YYYY-MM-DD")}
 1.如果请假时间和返校时间是同一天，则返校时间为次日日期
 2.如果不是同一天，则按照原日期输出
 3.若未提及日期，则请假日期为今天，返校日期为明天
-4.若今天已经在返校时间后或返校当天，则按照失败情况输出
+4.若今天已经在返校时间后或返校当天，则按照非请假信息输出
 
 输出将被程序使用，如果输出格式不符合要求，会导致程序崩溃！
 你只能输出纯文本，不支持markdown/latex等格式，务必严格按照以下格式输出：
-若传入图片有效，只能输出该格式的JSON，不可用代码块包裹：
+若传入内容是有效的请假信息，则只能输出该格式的JSON，且不可用代码块包裹：
 {"name":"姓名","start":"YYYY-MM-DD","end":"YYYY-MM-DD"}
 如：
 {"name":"张三","start":"2026-04-30","end":"2026-05-01"}
-若无效，只能输出两个字：失败` },
+若不是有效的请假信息或者当前时间不在请假时间内，只能输出四个字：消息无效` },
                 ]
             }],
     });
     console.log(completion.usage)
-    if (completion.choices[0].message.content === "失败") {
+    if (completion.choices[0].message.content === "消息无效") {
         console.log("非请假消息")
+        console.log(completion.choices[0].message.reasoning_content)
     } else {
         console.log("请假消息", completion.choices[0].message.content)
-        let res: Leave = JSON.parse(completion.choices[0].message.content ?? '')
-        let data: Leave[] = JSON.parse(await readFile(dataFileName, 'utf-8'))
-        let now = dayjs()
-        // 过滤过期/同名记录
-        data = data.filter(item => {
-            return now.isBefore(dayjs(item.end)) && item.name !== res.name
+        let data = JSON.parse(completion.choices[0].message.content ?? '')
+        let res = await fetch(`${API_URL}/add`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${API_KEY}`,
+            },
+            body: JSON.stringify(data),
         })
-        data.push(res)
-        await writeFile(dataFileName, JSON.stringify(data))
-        console.log(JSON.stringify(data))
+        console.log(JSON.stringify(await res.json()))
     }
 }
 async function main() {
