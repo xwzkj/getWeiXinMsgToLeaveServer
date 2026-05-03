@@ -1,0 +1,17 @@
+# 请假服务-数据源
+
+## 环境变量
+
+可放在.env文件中
+
+``` text
+API_URL=请假服务器API url
+API_KEY=请假服务器API Key
+AI_API_KEY=阿里云百炼的API Key
+```
+
+## 使用方法
+
+在有声卡的windows上，启动微信，打开请假消息的聊天窗口，关闭其他微信窗口
+
+运行`node app.ts`
