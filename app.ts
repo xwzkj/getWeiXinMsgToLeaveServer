@@ -82,17 +82,19 @@ const handleWXMsg = debounce(async () => {
         let sortedLogFiles = readdirSync(logDir).sort((a, b) => { // 按时间倒序
             return statSync(join(logDir, b)).mtimeMs - statSync(join(logDir, a)).mtimeMs
         })
-        let previousImage = PNG.sync.read(readFileSync(join(logDir, sortedLogFiles[0])))
-        // 判断新截图和之前的截图有没有变化
-        let diff = (WXImage.width - previousImage.width) + (WXImage.height - previousImage.height)
-        if (!diff) {
-            diff = pixelmatch(PNG.sync.read(WXImagePngBin).data, previousImage.data, undefined, WXImage.width, WXImage.height, { threshold: 0.1 })
-        }
         // 把新截图存到日志
         await writeFile(join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`), WXImagePngBin)
-        if (!diff) {
-            console.log("消息截图未变化")
-            return
+        if (sortedLogFiles.length > 0) { // 如果存在历史截图
+            let previousImage = PNG.sync.read(readFileSync(join(logDir, sortedLogFiles[0])))
+            // 判断新截图和之前的截图有没有变化
+            let diff = (WXImage.width !== previousImage.width || WXImage.height !== previousImage.height) ? 1 : 0
+            if (!diff) {
+                diff = pixelmatch(PNG.sync.read(WXImagePngBin).data, previousImage.data, undefined, WXImage.width, WXImage.height, { threshold: 0.1 })
+            }
+            if (!diff) {
+                console.log("消息截图未变化")
+                return
+            }
         }
         // 截图不一样再调用AI
         let base64 = WXImagePngBin.toString('base64')
@@ -203,4 +205,4 @@ async function main() {
     }
 }
 main()
-handleWXMsg()
+// handleWXMsg()
