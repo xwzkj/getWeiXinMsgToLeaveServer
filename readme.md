@@ -1,5 +1,7 @@
 # 请假服务-数据源
 
+搭配[请假服务器](https://github.com/xwzkj/leaveServer)和[奶酪课程表](https://github.com/xwzkj/cheeseschedule)使用
+
 ## 环境变量
 
 可放在.env文件中
