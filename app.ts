@@ -5,9 +5,11 @@ import OpenAI from "openai";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import timezone from "dayjs/plugin/timezone.js";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
 
 import { writeFile } from "fs/promises";
-import { mkdirSync, existsSync } from "fs";
+import { mkdirSync, existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
@@ -75,9 +77,25 @@ const handleWXMsg = debounce(async () => {
     console.log("收到新消息")
     let WXImage = await captureWX()
     if (WXImage) {
-        let WXImagePng = await WXImage.toPng()
-        await writeFile(join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`), WXImagePng)
-        let base64 = WXImagePng.toString('base64')
+        let WXImagePngBin = await WXImage.toPng()
+        // 找最新的日志截图
+        let sortedLogFiles = readdirSync(logDir).sort((a, b) => { // 按时间倒序
+            return statSync(join(logDir, b)).mtimeMs - statSync(join(logDir, a)).mtimeMs
+        })
+        let previousImage = PNG.sync.read(readFileSync(join(logDir, sortedLogFiles[0])))
+        // 判断新截图和之前的截图有没有变化
+        let diff = (WXImage.width - previousImage.width) + (WXImage.height - previousImage.height)
+        if (!diff) {
+            diff = pixelmatch(PNG.sync.read(WXImagePngBin).data, previousImage.data, undefined, WXImage.width, WXImage.height, { threshold: 0.1 })
+        }
+        // 把新截图存到日志
+        await writeFile(join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`), WXImagePngBin)
+        if (!diff) {
+            console.log("消息截图未变化")
+            return
+        }
+        // 截图不一样再调用AI
+        let base64 = WXImagePngBin.toString('base64')
         try {
             await AIprocess(base64)
         } catch (err) {
@@ -185,4 +203,4 @@ async function main() {
     }
 }
 main()
-// handleWXMsg()
+handleWXMsg()
