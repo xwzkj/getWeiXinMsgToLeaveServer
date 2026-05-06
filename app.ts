@@ -17,6 +17,9 @@ dotenv.config()
 
 const API_URL = process.env.API_URL ?? 'http://localhost:3000'
 const API_KEY = process.env.API_KEY ?? '114514'
+const MAX_AI_CALL_COUNT = parseInt(process.env.MAX_AI_CALL_COUNT ?? '50')
+let aiCallCount = 0
+
 
 const sv = new soundVolume(join(dirname(fileURLToPath(import.meta.url)), 'svcl.exe'))
 const logDir = join(dirname(fileURLToPath(import.meta.url)), 'log')
@@ -101,7 +104,13 @@ const handleWXMsg = async () => {
         let logFileName = join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`)
         console.log('消息截图：' + logFileName)
         await writeFile(logFileName, WXImagePngBin)
-        // 截图不一样再调用AI
+        // 检查是否超过最大调用次数
+        if (aiCallCount >= MAX_AI_CALL_COUNT) {
+            console.log("已调用AI最大次数，取消请求")
+            return
+        }
+        aiCallCount++
+        // 调用AI
         let base64 = WXImagePngBin.toString('base64')
         try {
             await AIprocess(base64)
@@ -203,4 +212,11 @@ async function AIprocess(base64: string) {
 setInterval(() => {
     handleWXMsg()
 }, 10000)
+
+// 每天0点0分重置调用次数
+setInterval(() => {
+    if (dayjs().format("HH:mm") === "00:00" && dayjs().second() < 5) {
+        aiCallCount = 0
+    }
+}, 1000)
 // handleWXMsg()
