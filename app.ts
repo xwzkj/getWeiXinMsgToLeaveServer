@@ -83,7 +83,9 @@ const handleWXMsg = debounce(async () => {
             return statSync(join(logDir, b)).mtimeMs - statSync(join(logDir, a)).mtimeMs
         })
         // 把新截图存到日志
-        await writeFile(join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`), WXImagePngBin)
+        let logFileName = join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`)
+        console.log('消息截图：' + logFileName)
+        await writeFile(logFileName, WXImagePngBin)
         if (sortedLogFiles.length > 0) { // 如果存在历史截图
             let previousImage = PNG.sync.read(readFileSync(join(logDir, sortedLogFiles[0])))
             // 判断新截图和之前的截图有没有变化
