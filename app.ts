@@ -110,6 +110,8 @@ const handleWXMsg = async () => {
             return
         }
         aiCallCount++
+        console.log(`本次运行，今日已调用AI${aiCallCount}次，最多${MAX_AI_CALL_COUNT}次`)
+
         // 调用AI
         let base64 = WXImagePngBin.toString('base64')
         try {
