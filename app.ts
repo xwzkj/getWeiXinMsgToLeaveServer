@@ -87,6 +87,9 @@ const handleWXMsg = async () => {
             let diff = (WXImage.width !== previousImage.width || WXImage.height !== previousImage.height) ? 1 : 0
             if (!diff) {
                 diff = pixelmatch(PNG.sync.read(WXImagePngBin).data, previousImage.data, undefined, WXImage.width, WXImage.height, { threshold: 0.1 })
+                if (diff <= 10) {
+                    diff = 0;
+                }
             }
             if (!diff) {
                 // console.log("消息截图未变化")
@@ -199,5 +202,5 @@ async function AIprocess(base64: string) {
 }
 setInterval(() => {
     handleWXMsg()
-}, 1000)
+}, 10000)
 // handleWXMsg()
