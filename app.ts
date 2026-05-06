@@ -92,12 +92,12 @@ const handleWXMsg = async () => {
                 // console.log("消息截图未变化")
                 return
             }
-            // 如果不一样，把新截图存到日志
-            console.log("收到新消息")
-            let logFileName = join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`)
-            console.log('消息截图：' + logFileName)
-            await writeFile(logFileName, WXImagePngBin)
         }
+        // 如果不一样，把新截图存到日志
+        console.log("收到新消息")
+        let logFileName = join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`)
+        console.log('消息截图：' + logFileName)
+        await writeFile(logFileName, WXImagePngBin)
         // 截图不一样再调用AI
         let base64 = WXImagePngBin.toString('base64')
         try {
