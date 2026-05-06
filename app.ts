@@ -73,8 +73,7 @@ function debounce(func: Function, delay: number) {
     };
 }
 
-const handleWXMsg = debounce(async () => {
-    console.log("收到新消息")
+const handleWXMsg = async () => {
     let WXImage = await captureWX()
     if (WXImage) {
         let WXImagePngBin = await WXImage.toPng()
@@ -82,10 +81,6 @@ const handleWXMsg = debounce(async () => {
         let sortedLogFiles = readdirSync(logDir).sort((a, b) => { // 按时间倒序
             return statSync(join(logDir, b)).mtimeMs - statSync(join(logDir, a)).mtimeMs
         })
-        // 把新截图存到日志
-        let logFileName = join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`)
-        console.log('消息截图：' + logFileName)
-        await writeFile(logFileName, WXImagePngBin)
         if (sortedLogFiles.length > 0) { // 如果存在历史截图
             let previousImage = PNG.sync.read(readFileSync(join(logDir, sortedLogFiles[0])))
             // 判断新截图和之前的截图有没有变化
@@ -94,9 +89,14 @@ const handleWXMsg = debounce(async () => {
                 diff = pixelmatch(PNG.sync.read(WXImagePngBin).data, previousImage.data, undefined, WXImage.width, WXImage.height, { threshold: 0.1 })
             }
             if (!diff) {
-                console.log("消息截图未变化")
+                // console.log("消息截图未变化")
                 return
             }
+            // 如果不一样，把新截图存到日志
+            console.log("收到新消息")
+            let logFileName = join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`)
+            console.log('消息截图：' + logFileName)
+            await writeFile(logFileName, WXImagePngBin)
         }
         // 截图不一样再调用AI
         let base64 = WXImagePngBin.toString('base64')
@@ -117,7 +117,7 @@ const handleWXMsg = debounce(async () => {
     } else {
         console.error("截图失败")
     }
-}, 1000)
+}
 
 async function AIprocess(base64: string) {
     console.log("提取消息内容中：")
@@ -197,14 +197,7 @@ async function AIprocess(base64: string) {
         console.log(JSON.stringify(await res.json()))
     }
 }
-async function main() {
-    while (true) {
-        await new Promise(resolve => setTimeout(resolve, 10))
-        let WXSound = await getWXSound()
-        if (WXSound) {
-            handleWXMsg()
-        }
-    }
-}
-main()
+setInterval(() => {
+    handleWXMsg()
+}, 1000)
 // handleWXMsg()
