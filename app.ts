@@ -1,5 +1,3 @@
-// @ts-ignore
-import soundVolume from "node-sound-volume";
 import { Window } from "node-screenshots";
 import OpenAI from "openai";
 import dayjs from "dayjs";
@@ -19,9 +17,6 @@ const API_URL = process.env.API_URL ?? 'http://localhost:3000'
 const API_KEY = process.env.API_KEY ?? '114514'
 const MAX_AI_CALL_COUNT = parseInt(process.env.MAX_AI_CALL_COUNT ?? '50')
 let aiCallCount = 0
-
-
-const sv = new soundVolume(join(dirname(fileURLToPath(import.meta.url)), 'svcl.exe'))
 const logDir = join(dirname(fileURLToPath(import.meta.url)), 'log')
 
 if (!existsSync(logDir)) {
@@ -41,21 +36,6 @@ const openai = new OpenAI(
     }
 );
 
-async function getWXSound() {
-    let volumes = await sv.listSoundVolumes({
-        type: "Application",
-        direction: "Render",
-    });
-    for (let i = 0; i < volumes.length; i++) {
-        if ((volumes[i].name.includes("Weixin") || volumes[i].name.includes("WeChat")) && volumes[i].deviceState === "Active") {
-            return true
-        }
-        // if(volumes[i].name.includes("Weixin") ){
-        //     console.log(volumes[i])
-        // }
-    }
-    return false
-}
 async function captureWX() {
     let windows = Window.all()
     for (let window of windows) {
@@ -64,16 +44,6 @@ async function captureWX() {
         }
     }
     return null
-}
-
-function debounce(func: Function, delay: number) {
-    let timer: any
-    return (...args: any) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            func(...args)
-        }, delay);
-    };
 }
 
 const handleWXMsg = async () => {
@@ -100,6 +70,7 @@ const handleWXMsg = async () => {
             }
         }
         // 如果不一样，把新截图存到日志
+        console.log("\n\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         console.log("收到新消息")
         let logFileName = join(logDir, `${dayjs().format("YYYY-MM-DD HH：mm：ss")}.png`)
         console.log('消息截图：' + logFileName)
@@ -110,7 +81,7 @@ const handleWXMsg = async () => {
             return
         }
         aiCallCount++
-        console.log(`本次运行，今日已调用AI${aiCallCount}次，最多${MAX_AI_CALL_COUNT}次`)
+        console.log(`本次运行，今日已触发大模型调用${aiCallCount}次，最多${MAX_AI_CALL_COUNT}次`)
 
         // 调用AI
         let base64 = WXImagePngBin.toString('base64')
@@ -136,7 +107,7 @@ const handleWXMsg = async () => {
 async function AIprocess(base64: string) {
     console.log("提取消息内容中：")
     let completion = await (openai.chat.completions as any).create({
-        model: "qwen3.5-plus",
+        model: "qwen3.5-flash",
         stream: false,
         enable_thinking: false,
         messages: [
